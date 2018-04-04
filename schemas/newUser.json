@@ -37,7 +37,6 @@
       "$id": "/properties/password",
       "type": "string",
       "title": "The Password Schema ",
-      "default": "",
       "examples": ["password123"],
       "minLength": 1,
       "maxLength": 55
@@ -46,7 +45,8 @@
       "$id": "/properties/photo",
       "type": "string",
       "title": "The Photo Schema ",
-      "default": "",
+      "default":
+        "https://worldarts2015.s3-us-west-2.amazonaws.com/images/default-profile-picture.jpg?cache=1473463677",
       "examples": ["https://wwww.picture.com"]
     }
   },
