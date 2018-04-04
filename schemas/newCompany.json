@@ -1,0 +1,50 @@
+{
+  "$id": "http://rithmschool.com/example.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$id": "/properties/name",
+      "type": "string",
+      "title": "The Name Schema ",
+      "default": "",
+      "examples": ["Rithm School"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "email": {
+      "$id": "/properties/email",
+      "type": "string",
+      "title": "The Email Schema ",
+      "default": "",
+      "examples": ["contact@rithmschool.com"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "handle": {
+      "$id": "/properties/handle",
+      "type": "string",
+      "title": "The Handle Schema ",
+      "default": "",
+      "examples": ["rithmschool"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "password": {
+      "$id": "/properties/password",
+      "type": "string",
+      "title": "The Password Schema ",
+      "default": "",
+      "examples": ["password123"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "logo": {
+      "$id": "/properties/logo",
+      "type": "string",
+      "title": "The Logo Schema ",
+      "default": "",
+      "examples": ["https://www.rithmschool.com/elie.jpg"]
+    }
+  },
+  "required": ["name", "email", "handle", "password", "logo"]
+}
