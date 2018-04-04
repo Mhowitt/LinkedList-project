@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Company = require("./company");
+const Company = require("../models");
 
 const jobSchema = new mongoose.Schema(
   {
@@ -20,9 +20,9 @@ jobSchema.statics = {
    * @param {Object} newJobPosting -- an instance of a job document
    */
   createJobPosting(newJobPosting) {
-    return Company.findById(newJobPosting.company)
-      .then(company => {
-        if (!company) throw new Error(`${company} does not exist`);
+    // return Company.findById(newJobPosting.company)
+    //   .then(company => {
+    //     if (!company) throw new Error(`${company} does not exist`);
         return newJobPosting
           .save()
           .then(job =>
@@ -30,11 +30,8 @@ jobSchema.statics = {
               $addToSet: { jobs: job._id }
             }).then(() => job)
           ).catch(err => Promise.reject(err));
-      });
-  }
-};
-
-jobSchema.statics = {
+      // });
+  },
   /**
    * As a registered company, delete an existing job posting for your company.
    * @param {String} jobId -- an id corresponding to an existing job postin
