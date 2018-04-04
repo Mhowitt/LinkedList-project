@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const { usersRouter, companiesRouter, jobsRouter } = require("./routers");
 
 const app = express();
 
@@ -12,6 +13,10 @@ const PORT = 3000;
 app.use("/users", usersRouter);
 app.use("/companies", companiesRouter);
 app.use("/jobs", jobsRouter);
+
+app.get("/", (req, res, next) => {
+  return res.redirect("/users");
+});
 
 app.use((err, req, res, next) => {
   return res

@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const { companies } = require("../handers");
+const { companies } = require("../handlers");
 
 router
   .route("")
   .get(companies.readCompanies)
   .post(companies.createCompany);
 
-router.get("/new").get(companies.newCompanyForm);
+router.route("/new").get(companies.newCompanyForm);
 
 router
   .route("/:companyId")

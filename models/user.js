@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
 userSchema.statics = {
   createUser(newUser) {
     return this.findOne({ username: newUser.username }).then(user => {
-      if (user.username) {
+      if (user) {
         throw new Error(`The username ${newUser.username} already exists`);
       }
 

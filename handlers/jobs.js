@@ -16,3 +16,13 @@ function updateJobPosting(req, res, next) {}
 function deleteJobPosting(req, res, next) {}
 
 function editJobPosting(req, res, next) {}
+
+module.exports = {
+  readJobPostings,
+  readJobPosting,
+  createJobPosting,
+  newJobPostingForm,
+  updateJobPosting,
+  deleteJobPosting,
+  editJobPosting
+};

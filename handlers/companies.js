@@ -15,3 +15,13 @@ function updateCompany(req, res, next) {}
 function deleteCompany(req, res, next) {}
 
 function editCompany(req, res, next) {}
+
+module.exports = {
+  readCompanies,
+  createCompany,
+  newCompanyForm,
+  readCompany,
+  updateCompany,
+  deleteCompany,
+  editCompany
+};

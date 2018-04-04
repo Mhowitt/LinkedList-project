@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const { users } = require("../handers");
+const { users } = require("../handlers");
 
 router
   .route("")
   .get(users.readUsers)
   .post(users.createUser);
 
-router.get("/new").get(users.newUserForm);
+router.route("/new").get(users.newUserForm);
 
 router
   .route("/:userId")
@@ -16,6 +16,6 @@ router
   .patch(users.updateUser)
   .delete(users.deleteUser);
 
-router.route("/:userId/edit").get(users.editUser);
+router.route("/:userId/edit").get(users.editUserForm);
 
 module.exports = router;
