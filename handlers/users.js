@@ -4,10 +4,10 @@ const v = new Validator();
 const { newUserSchema } = require("../schemas");
 
 function createUser(req, res, next) {
-  //const result = v.validate(req.body, newUserSchema);
-  //   if (!result.isValid) {
-  //     return next(result.errorMessage);
-  //   }
+  const result = v.validate(req.body, newUserSchema);
+  if (!result.isValid) {
+    return next(result.errorMessage);
+  }
   User.createUser(new User(req.body))
     .then(user => {
       return res.status(201).json(user);
@@ -52,7 +52,9 @@ function deleteUser(req, res, next) {
   });
 }
 
-function editUserForm(req, res, next) {}
+function editUserForm(req, res, next) {
+  return res.json({ message: "userForm successfully brought" });
+}
 
 module.exports = {
   createUser,

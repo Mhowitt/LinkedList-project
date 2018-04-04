@@ -6,7 +6,6 @@
       "$id": "/properties/firstName",
       "type": "string",
       "title": "The Firstname Schema ",
-      "default": "",
       "examples": ["Jane"],
       "minLength": 1,
       "maxLength": 55
@@ -15,7 +14,6 @@
       "$id": "/properties/lastName",
       "type": "string",
       "title": "The Lastname Schema ",
-      "default": "",
       "examples": ["Doe"],
       "minLength": 1,
       "maxLength": 55
@@ -24,7 +22,6 @@
       "$id": "/properties/username",
       "type": "string",
       "title": "The Username Schema ",
-      "default": "",
       "examples": ["linkedlistUser"],
       "minLength": 1,
       "maxLength": 55
@@ -32,8 +29,8 @@
     "email": {
       "$id": "/properties/email",
       "type": "string",
+      "format": "email",
       "title": "The Email Schema ",
-      "default": "",
       "examples": ["jane.doe@example.com"]
     },
     "password": {

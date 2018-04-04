@@ -8,10 +8,12 @@ const userSchema = new mongoose.Schema(
     username: String,
     email: String,
     password: String,
-    currentCompany: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Company"
-    },
+    currentCompany: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Company"
+      }
+    ],
     photo: String,
     experience: {
       jobTitle: String,
