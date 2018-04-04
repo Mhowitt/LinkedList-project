@@ -45,10 +45,10 @@ companySchema.statics = {
   deleteCompany(companyId) {
     return this.findById(companyId)
       .then(company => {
-        Job.update({ $pullAll: { _id: company.jobs }})
-          .then(jobs => console.log(`Job postings by ${company.name} deleted`))
-          .catch(err => Promise.reject(err));
-        Company.remove({ _id: companyId }, function(){})
+        // return Job.update({ $pullAll: { _id: company.jobs }})
+        //   .then(jobs => console.log(`Job postings by ${company.name} deleted`))
+        //   .catch(err => Promise.reject(err));
+        return this.remove({ _id: companyId }).exec()
           .then(jobs => console.log(`Job postings by ${company.name} deleted`))
           .catch(err => Promise.reject(err));
       })
