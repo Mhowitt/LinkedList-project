@@ -1,0 +1,1 @@
+exports.newUserSchema = require("./newUser");

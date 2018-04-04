@@ -37,21 +37,37 @@ const userSchema = new mongoose.Schema(
 userSchema.statics = {
   createUser(newUser) {
     return this.findOne({ username: newUser.username }).then(user => {
-      if (user) {
+      if (user.username) {
         throw new Error(`The username ${newUser.username} already exists`);
       }
+
       return newUser
         .save()
-        .then(user =>
-          Company.findOneAndUpdate(user.company, {
-            $addToSet: { employees: user._id }
-          }).then(() => user)
-        )
+        .then(user => user)
         .catch(err => {
           return Promise.reject(err);
         });
     });
   }
 };
+
+userSchema.post("findOneAndUpdate", user => {
+  // call the owner model and update its dogs array
+  Company.findOneAndUpdate(user.currentCompany, {
+    $addToSet: { employees: user._id }
+  }).then(() => {
+    console.log("POST HOOK RAN");
+  });
+});
+
+// after Dog.findOneAndRemove (delete) query runs
+userSchema.post("findOneAndRemove", user => {
+  // call the owner model and update its dogs array
+  Company.findOneAndUpdate(user.currentCompany, {
+    $pull: { employees: user._id }
+  }).then(() => {
+    console.log("POST HOOK RAN");
+  });
+});
 
 module.exports = mongoose.model("User", userSchema);

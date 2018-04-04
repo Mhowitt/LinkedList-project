@@ -1,0 +1,59 @@
+const { User } = require("../models");
+const Validator = require("jsonschema").Validator;
+const v = new Validator();
+const { newUserSchema } = require("../schemas");
+
+function createUser(req, res, next) {
+  const result = v.validate(req.body, newUserSchema);
+  if (!result.isValid) {
+    return next(result.errorMessage);
+  }
+  User.createUser(new User(req.body))
+    .then(user => {
+      return res.status(201).json(user);
+    })
+    .catch(err => next(err));
+}
+
+function readUsers(req, res, next) {
+  return User.find().then(users => {
+    return res.json(users);
+  });
+}
+
+function readUser(req, res, next) {
+  return User.findById(req.params.userId)
+    .populate("currentCompany")
+    .exec()
+    .then(user => {
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: `User ${req.params.userId} not found.` });
+      }
+      return res.json(user);
+    })
+    .catch(err => {
+      return res.json(err);
+    });
+}
+
+function updateUser(req, res, next) {
+  return User.findByIdAndUpdate(req.params.userId, req.body, {
+    new: true
+  }).then(user => res.json(user));
+}
+
+function deleteUser(req, res, next) {
+  return User.findByIdAndRemove(req.params.userId).then(() => {
+    return res.json({ message: "User successfully deleted" });
+  });
+}
+
+module.exports = {
+  createUser,
+  readUsers,
+  readUser,
+  updateUser,
+  deleteUser
+};

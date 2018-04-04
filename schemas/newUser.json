@@ -1,0 +1,57 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "$id": "/properties/firstName",
+      "type": "string",
+      "title": "The Firstname Schema ",
+      "default": "",
+      "examples": ["Jane"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "lastName": {
+      "$id": "/properties/lastName",
+      "type": "string",
+      "title": "The Lastname Schema ",
+      "default": "",
+      "examples": ["Doe"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "username": {
+      "$id": "/properties/username",
+      "type": "string",
+      "title": "The Username Schema ",
+      "default": "",
+      "examples": ["linkedlistUser"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "email": {
+      "$id": "/properties/email",
+      "type": "string",
+      "title": "The Email Schema ",
+      "default": "",
+      "examples": ["jane.doe@example.com"]
+    },
+    "password": {
+      "$id": "/properties/password",
+      "type": "string",
+      "title": "The Password Schema ",
+      "default": "",
+      "examples": ["password123"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "photo": {
+      "$id": "/properties/photo",
+      "type": "string",
+      "title": "The Photo Schema ",
+      "default": "",
+      "examples": ["https://wwww.picture.com"]
+    }
+  },
+  "required": ["firstName", "lastName", "username", "email", "password"]
+}
