@@ -37,21 +37,20 @@ companySchema.statics = {
           .catch(err => Promise.reject(err));
       })
       .catch(err => Promise.reject(err));
-  }
-};
-
-companySchema.statics = {
+  },
   /**
    * As a registered company, delete your company and associated jobs postings from the database
    * @param {String} companyId -- an id corresponding to an existing company
    */
   deleteCompany(companyId) {
-    return this.findbyId(companyId)
+    return this.findById(companyId)
       .then(company => {
-        for (let jobId of company.jobs) {
-          Jobs.remove({ _id: jobId }, err => {});
-        }
-        Company.remove({ _id: companyId}, err => {});
+        Job.update({ $pullAll: { _id: company.jobs }})
+          .then(jobs => console.log(`Job postings by ${company.name} deleted`))
+          .catch(err => Promise.reject(err));
+        Company.remove({ _id: companyId }, function(){})
+          .then(jobs => console.log(`Job postings by ${company.name} deleted`))
+          .catch(err => Promise.reject(err));
       })
       .catch(err => Promise.reject(err));
   }

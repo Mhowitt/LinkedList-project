@@ -16,6 +16,6 @@ router
   .patch(companies.updateCompany)
   .delete(companies.deleteCompany);
 
-router.route("/:companyId/edit").get(companies.editCompany);
+router.route("/:companyId/edit").get(companies.editCompanyForm);
 
 module.exports = router;
