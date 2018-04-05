@@ -26,7 +26,7 @@ function readCompany(req, res, next) {
     .populate("employees")
     .exec()
     .then(company => {
-      if (!company) {
+      if (company) {
         return res
           .status(404)
           .json({ message: `Company ${req.params.companyId} not found` });
