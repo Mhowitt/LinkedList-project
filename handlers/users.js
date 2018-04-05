@@ -11,19 +11,19 @@ function createUser(req, res, next) {
   }
   User.createUser(new User(req.body))
     .then(user => {
-      return res.status(201).json(user);
+      return res.status(201).json({ data: user });
     })
     .catch(err => next(err));
 }
 
 function readUsers(req, res, next) {
   return User.find().then(users => {
-    return res.json(users);
+    return res.json({ data: users });
   });
 }
 
 function newUserForm(req, res, next) {
-  res.json({ message: "userForm successfully brought" });
+  res.json({ data: { message: "userForm successfully brought" } });
 }
 
 function readUser(req, res, next) {
@@ -35,12 +35,12 @@ function readUser(req, res, next) {
       if (!user) {
         return res
           .status(404)
-          .json({ message: `User ${req.params.userId} not found.` });
+          .json({ data: { message: `User ${req.params.userId} not found.` } });
       }
       return res.json({ data: user });
     })
     .catch(err => {
-      return res.json(err);
+      return res.json({ data: err });
     });
 }
 
@@ -52,12 +52,12 @@ function updateUser(req, res, next) {
 
 function deleteUser(req, res, next) {
   return User.findByIdAndRemove(req.params.userId).then(() => {
-    return res.json({ message: "User successfully deleted" });
+    return res.json({ data: { message: "User successfully deleted" } });
   });
 }
 
 function editUserForm(req, res, next) {
-  return res.json({ message: "userForm successfully brought" });
+  return res.json({ data: { message: "userForm successfully brought" } });
 }
 
 module.exports = {
