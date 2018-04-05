@@ -42,7 +42,6 @@ userSchema.statics = {
       if (user) {
         throw new Error(`The username ${newUser.username} already exists`);
       }
-
       return newUser
         .save()
         .then(user => user)
