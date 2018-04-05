@@ -16,6 +16,6 @@ router
   .patch(jobs.updateJobPosting)
   .delete(jobs.deleteJobPosting);
 
-router.route("/:jobId/edit").get(jobs.editJobPosting);
+router.route("/:jobId/edit").get(jobs.editJobPostingForm);
 
 module.exports = router;

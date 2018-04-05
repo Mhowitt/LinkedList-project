@@ -29,7 +29,7 @@ function newUserForm(req, res, next) {
 function readUser(req, res, next) {
   //Checked
   return User.findById(req.params.userId)
-    .populate("currentCompany")
+    .populate("currentCompanyId")
     .exec()
     .then(user => {
       if (!user) {
@@ -45,15 +45,17 @@ function readUser(req, res, next) {
 }
 
 function updateUser(req, res, next) {
-  return User.findByIdAndUpdate(req.params.userId, req.body, {
-    new: true
-  }).then(user => res.json({ data: user }));
+  return User.updateUser(req.params.userId, req.body)
+    .then(user => res.json({ data: user }))
+    .catch(err => next(err));
 }
 
 function deleteUser(req, res, next) {
-  return User.findByIdAndRemove(req.params.userId).then(() => {
-    return res.json({ data: { message: "User successfully deleted" } });
-  });
+  return User.deleteUser(req.params.userId)
+    .then(() => {
+      return res.json({ data: { message: "User successfully deleted" } });
+    })
+    .catch(err => next(err));
 }
 
 function editUserForm(req, res, next) {
