@@ -1,6 +1,8 @@
+
 const { Job, Company } = require("../models");
 const { newJobSchema } = require("../schemas");
 const Validator = require("jsonschema").Validator;
+
 const validator = new Validator();
 
 function newJobPostingForm(req, res, next) {
