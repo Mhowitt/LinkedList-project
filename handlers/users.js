@@ -28,14 +28,14 @@ function newUserForm(req, res, next) {
 
 function readUser(req, res, next) {
   //Checked
-  return User.findById(req.params.userId)
+  return User.findOne({ username: req.params.username })
     .populate("currentCompanyId")
     .exec()
     .then(user => {
       if (!user) {
-        return res
-          .status(404)
-          .json({ data: { message: `User ${req.params.userId} not found.` } });
+        return res.status(404).json({
+          data: { message: `User ${req.params.username} not found.` }
+        });
       }
       return res.json({ data: user });
     })
@@ -45,13 +45,13 @@ function readUser(req, res, next) {
 }
 
 function updateUser(req, res, next) {
-  return User.updateUser(req.params.userId, req.body)
+  return User.updateUser(req.params.username, req.body)
     .then(user => res.json({ data: user }))
     .catch(err => next(err));
 }
 
 function deleteUser(req, res, next) {
-  return User.deleteUser(req.params.userId)
+  return User.deleteUser(req.params.username)
     .then(() => {
       return res.json({ data: { message: "User successfully deleted" } });
     })

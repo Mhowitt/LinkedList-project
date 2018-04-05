@@ -11,11 +11,11 @@ router
 router.route("/new").get(companies.newCompanyForm);
 
 router
-  .route("/:companyId")
+  .route("/:handle")
   .get(companies.readCompany)
   .patch(companies.updateCompany)
   .delete(companies.deleteCompany);
 
-router.route("/:companyId/edit").get(companies.editCompanyForm);
+router.route("/:handle/edit").get(companies.editCompanyForm);
 
 module.exports = router;

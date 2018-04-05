@@ -11,11 +11,11 @@ router
 router.route("/new").get(users.newUserForm);
 
 router
-  .route("/:userId")
+  .route("/:username")
   .get(users.readUser)
   .patch(users.updateUser)
   .delete(users.deleteUser);
 
-router.route("/:userId/edit").get(users.editUserForm);
+router.route("/:username/edit").get(users.editUserForm);
 
 module.exports = router;

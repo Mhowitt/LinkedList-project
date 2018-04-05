@@ -14,7 +14,7 @@
     "email": {
       "$id": "/properties/email",
       "type": "string",
-      "title": "The Email Schema ",
+      "title": "Email",
       "default": "",
       "examples": ["contact@rithmschool.com"],
       "minLength": 1,

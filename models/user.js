@@ -51,8 +51,8 @@ userSchema.statics = {
         });
     });
   },
-  updateUser(userId, patchBody) {
-    return this.findOneAndUpdate(userId, patchBody, { new: true })
+  updateUser(username, patchBody) {
+    return this.findOneAndUpdate(username, patchBody, { new: true })
       .then(user => {
         return Company.findByIdAndUpdate(user.currentCompanyId, {
           $addToSet: { employees: user.id }
@@ -65,8 +65,8 @@ userSchema.statics = {
       })
       .catch(err => Promise.reject(err));
   },
-  deleteUser(userId) {
-    return this.findOneAndRemove(userId)
+  deleteUser(username) {
+    return this.findOneAndRemove(username)
       .then(user => {
         return Company.findOneAndUpdate(
           user.currentCompanyId,

@@ -1,16 +1,23 @@
-const { Job, Company } = require('../models');
-const { newCompanySchema } = require('../schemas');
-const Validator = require('jsonschema').Validator;
+const { Job, Company } = require("../models");
+const { newCompanySchema } = require("../schemas");
+const Validator = require("jsonschema").Validator;
 const validator = new Validator();
 
 function newCompanyForm(req, res, next) {
-  return res.json({ data: { message: 'New company form rendered successfully' }})
+  return res.json({
+    data: { message: "New company form rendered successfully" }
+  });
 }
 
 function createCompany(req, res, next) {
+  const result = validator.validate(req.body, newCompanySchema);
+  if (!result.valid) {
+    const errors = result.errors.map(e => e.message).join(", ");
+    return next({ message: errors });
+  }
   Company.createCompany(new Company(req.body))
     .then(company => res.status(201).json({ data: company }))
-    .catch(err => res.json({ data: err }));
+    .catch(err => res.json(err.message));
 }
 
 function readCompanies(req, res, next) {
@@ -20,13 +27,14 @@ function readCompanies(req, res, next) {
 }
 
 function readCompany(req, res, next) {
-  return Company.findById(req.params.companyId)
-    .populate('employees').exec()
+  return Company.findOne({ handle: req.params.handle })
+    .populate("employees")
+    .exec()
     .then(company => {
       if (!company) {
-        return res
-          .status(404)
-          .json({ data: { message: `Company ${req.params.companyId} not found` }});
+        return res.status(404).json({
+          data: { message: `Company ${req.params.handle} not found` }
+        });
       }
       return res.json({ data: company });
     })
@@ -34,18 +42,22 @@ function readCompany(req, res, next) {
 }
 
 function editCompanyForm(req, res, next) {
-  return res.json({ data: { message: 'Edit company form rendered successfully' }});
+  return res.json({
+    data: { message: "Edit company form rendered successfully" }
+  });
 }
 
 function updateCompany(req, res, next) {
-  return Company.findByIdAndUpdate(req.params.companyId, req.body, {new: true})
+  return Company.findOneAndUpdate({ handle: req.params.handle }, req.body, {
+    new: true
+  })
     .then(company => res.json({ data: company }))
     .catch(err => res.json({ data: err }));
 }
 
 function deleteCompany(req, res, next) {
-  return Company.findOneAndRemove(req.params.companyId)
-    .then(() => res.json({ data: { message: 'Company successfully deleted' }}))
+  return Company.findOneAndRemove({ handle: req.params.handle })
+    .then(() => res.json({ data: { message: "Company successfully deleted" } }))
     .catch(err => res.json({ data: err }));
 }
 
