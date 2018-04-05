@@ -10,7 +10,8 @@ function readJobPostings(req, res, next) {
 }
 
 function createJobPosting(req, res, next) {
-  Job.createJobPosting(new Job(req.body))
+  return new Job(req.body)
+    .save()
     .then(job => {
       return res.status(201).json(job);
     })
@@ -41,13 +42,13 @@ function readJobPosting(req, res, next) {
 function updateJobPosting(req, res, next) {
   return Job.findByIdAndUpdate(req.params.jobId, req.body, {
     new: true
-  }).then(job => res.json(job));
+  }).then(job => res.json({ data: job } ));
 }
 
 function deleteJobPosting(req, res, next) {
-  Job.deleteJobPosting(req.params.jobId).then(() => {
-    return res.json({ message: "User successfully deleted" });
-  });
+  Job.deleteJobPosting(req.params.jobId)
+  .then(() => res.json({ message: "User successfully deleted" }))
+  .catch(err => res.json(err));
 }
 
 function editJobPosting(req, res, next) {
