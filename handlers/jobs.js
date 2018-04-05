@@ -46,8 +46,8 @@ function updateJobPosting(req, res, next) {
 }
 
 function deleteJobPosting(req, res, next) {
-  Job.deleteJobPosting(req.params.jobId)
-  .then(() => res.json({ message: "User successfully deleted" }))
+  Job.findByIdAndRemove(req.params.jobId)
+  .then(() => res.json({ message: "Job successfully deleted" }))
   .catch(err => res.json(err));
 }
 

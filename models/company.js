@@ -41,10 +41,13 @@ companySchema.statics = {
   }
 };
 
-companySchema.post("findOneAndRemove", company => {
-  Job.remove({ _id: company.id }).exec()
-    .then(() => console.log(`Job postings by ${company.name} deleted`))
-    .catch(err => console.log(err));
+companySchema.post("findOneAndRemove", deletedCompany => {
+  console.log(deletedCompany, deletedCompany._id, deletedCompany.id)
+  Job.remove({ company: deletedCompany.id }, err => {
+    if (err) console.log('JOBS NOT DELETED! + ', err)
+  })
+    .then(() => console.log(`Job postings by ${deletedCompany.name} deleted`))
+    .catch(err => console.log('Unable to delete associated jobs:', err));
 });
 
 module.exports = mongoose.model("Company", companySchema);

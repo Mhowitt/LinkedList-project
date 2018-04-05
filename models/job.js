@@ -14,9 +14,9 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-jobSchema.post('findOneAndRemove', job => {
+jobSchema.post('findByIdAndRemove', job => {
   Company.findOneAndUpdate( job.company, {
-      $pull: { jobs: job._id }
+      $pull: { jobs: job.id }
     })
     .exec()
     .then(() => console.log(`Job posting for ${job.title} at ${job.company} deleted`))
