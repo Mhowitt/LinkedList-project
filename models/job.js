@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Company = require("../models");
+const Company = require("./job");
 
 const jobSchema = new mongoose.Schema(
   {
