@@ -1,13 +1,12 @@
-const mongoose = require("mongoose");
-const Company = require("./job");
+const mongoose = require('mongoose');
 
 const jobSchema = new mongoose.Schema(
   {
     title: String,
-    companyName: String,
+    companyHandle: String,
     company: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Company"
+      ref: 'Company'
     },
     salary: Number,
     equity: Number
@@ -15,21 +14,46 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-jobSchema.post('save', job => {
-  return Company.findOneAndUpdate({ name: job.companyName }, {
-    $addToSet: { jobs: job._id }
-  }).then(company => {
-    console.log(`${job._id} added to ${company.name} jobs list`);
-  }).catch(err => console.log(err));
-});
+jobSchema.statics = {
+  createJobPosting(newJob) {
+    return newJob
+      .save()
+      .then(job => {
+        console.log(`${job.title} successfully created`);
+        return mongoose
+          .model('Company')
+          .findOneAndUpdate(
+            { handle: job.companyHandle },
+            {
+              $addToSet: { jobs: job._id }
+            }
+          )
+          .then(company => {
+            console.log(`Job ${job._id} added to ${company.name}'s jobs list`);
+            return job;
+          })
+          .catch(err => Promise.reject(err));
+      })
+      .catch(err => Promise.reject(err));
+  },
+  deleteJobPosting(jobId) {
+    return this.findByIdAndRemove(jobId)
+      .then(job => {
+        console.log(`${job.title} successfully deleted`);
+        return mongoose
+          .model('Company')
+          .findOneAndUpdate(job.company, {
+            $pull: { jobs: job._id }
+          })
+          .then(company =>
+            console.log(
+              `Job ${job._id} removed from ${company.name}'s jobs list`
+            )
+          )
+          .catch(err => Promise.reject(err));
+      })
+      .catch(err => Promise.reject(err));
+  }
+};
 
-jobSchema.post('findByIdAndRemove', job => {
-  Company.findOneAndUpdate( job.company, {
-      $pull: { jobs: job.id }
-    })
-    .exec()
-    .then(() => console.log(`Job posting for ${job.title} at ${job.company} deleted`))
-    .catch(err => console.log(err));
-});
-
-module.exports = mongoose.model("Job", jobSchema);
+module.exports = mongoose.model('Job', jobSchema);

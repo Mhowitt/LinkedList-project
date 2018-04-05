@@ -1,21 +1,21 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const { jobs } = require("../handlers");
+const { jobs } = require('../handlers');
 
 router
-  .route("")
+  .route('')
   .get(jobs.readJobPostings)
   .post(jobs.createJobPosting);
 
-router.route("/new").get(jobs.newJobPostingForm);
+router.route('/new').get(jobs.newJobPostingForm);
 
 router
-  .route("/:jobId")
+  .route('/:jobId')
   .get(jobs.readJobPosting)
   .patch(jobs.updateJobPosting)
   .delete(jobs.deleteJobPosting);
 
-router.route("/:jobId/edit").get(jobs.editJobPostingForm);
+router.route('/:jobId/edit').get(jobs.editJobPostingForm);
 
 module.exports = router;

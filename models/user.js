@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Company = require("./company");
+const mongoose = require('mongoose');
+const Company = require('./company');
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     currentCompanyId: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Company"
+        ref: 'Company'
       }
     ],
     photo: String,
@@ -58,7 +58,7 @@ userSchema.statics = {
           $addToSet: { employees: user.id }
         })
           .then(() => {
-            console.log("POST HOOK RAN");
+            console.log('POST HOOK RAN');
             return user;
           })
           .catch(err => Promise.reject(err));
@@ -76,7 +76,7 @@ userSchema.statics = {
           { new: true }
         )
           .then(() => {
-            console.log("POST HOOK RAN");
+            console.log('POST HOOK RAN');
           })
           .catch(err => Promise.reject(err));
       })
@@ -109,4 +109,4 @@ userSchema.statics = {
 //   });
 // });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
