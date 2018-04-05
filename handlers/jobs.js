@@ -1,66 +1,61 @@
-const { Job, Company } = require("../models");
+const { Job, Company } = require('../models');
+const { newJobSchema } = require('../schemsa');
+const Validator = require('jsonschema').Validator;
+const validator = new Validator();
 
-const Validator = require("jsonschema").Validator;
-const v = new Validator();
-
-function readJobPostings(req, res, next) {
-  return Job.find().then(jobs => {
-    return res.json(jobs);
-  });
+function newJobPostingForm(req, res, next) {
+  return res.json({ data: { message: 'New job form rendered successfully' }});
 }
 
 function createJobPosting(req, res, next) {
   return new Job(req.body)
     .save()
-    .then(job => {
-      return res.status(201).json(job);
-    })
-    .catch(err => next(err));
+    .then(job => res.status(201).json({ data: job }))
+    .catch(err => res.json({ data: err }));
 }
 
-function newJobPostingForm(req, res, next) {
-  return res.status(300);
+function readJobPostings(req, res, next) {
+  return Job.find()
+    .then(jobs => res.json({ data: jobs }))
+    .catch(err => res.json({ data: err }));
 }
 
 function readJobPosting(req, res, next) {
   return Job.findById(req.params.jobId)
-    .populate("company")
-    .exec()
+    .populate('company').exec()
     .then(job => {
       if (!user) {
         return res
           .status(404)
-          .json({ message: `User ${req.params.userId} not found.` });
+          .json({ message: `User ${req.params.userId} not found` });
       }
-      return res.json(job);
+      return res.json({ data: job });
     })
-    .catch(err => {
-      return res.json(err);
-    });
+    .catch(err => res.json({ data: err }));
+}
+
+function editJobPostingForm(req, res, next) {
+  return res.json({ data: { message: 'Edit job form rendered successfully' }});
 }
 
 function updateJobPosting(req, res, next) {
-  return Job.findByIdAndUpdate(req.params.jobId, req.body, {
-    new: true
-  }).then(job => res.json({ data: job } ));
+  return Job.findByIdAndUpdate(req.params.jobId, req.body, { new: true })
+  .then(job => res.json({ data: job }))
+  .catch(err => res.json({ data: err }));
 }
 
 function deleteJobPosting(req, res, next) {
-  Job.findByIdAndRemove(req.params.jobId)
-  .then(() => res.json({ message: "Job successfully deleted" }))
-  .catch(err => res.json(err));
-}
-
-function editJobPosting(req, res, next) {
-  return res.status(300);
+  return Job.findByIdAndRemove(req.params.jobId)
+  .then(() => res.json({ data: { message: 'Job successfully deleted' }}))
+  .catch(err => res.json({ data: err }));
 }
 
 module.exports = {
+  newJobPostingForm,
+  createJobPosting,
   readJobPostings,
   readJobPosting,
-  createJobPosting,
-  newJobPostingForm,
+  editJobPosting,
   updateJobPosting,
-  deleteJobPosting,
-  editJobPosting
+  deleteJobPosting
 };
