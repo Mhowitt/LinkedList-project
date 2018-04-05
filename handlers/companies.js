@@ -26,7 +26,7 @@ function readCompany(req, res, next) {
     .populate("employees")
     .exec()
     .then(company => {
-      if (company) {
+      if (!company) {
         return res
           .status(404)
           .json({ message: `Company ${req.params.companyId} not found` });
@@ -51,8 +51,9 @@ function updateCompany(req, res, next) {
 }
 
 function deleteCompany(req, res, next) {
-  return Company.deleteCompany(req.params.companyId)
-    .then(() => res.json({ message: "Company successfully deleted" }))
+
+  return Company.findOneAndRemove(req.params.companyId)
+    .then(() => res.json({ message: 'Company successfully deleted' }))
     .catch(err => res.json(err));
 }
 

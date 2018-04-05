@@ -23,6 +23,7 @@ const companySchema = new mongoose.Schema({
 });
 
 companySchema.statics = {
+
   /**
    * Create a new company.
    * @param {Object} newCompany -- an instance of a company document
@@ -37,23 +38,13 @@ companySchema.statics = {
           .catch(err => Promise.reject(err));
       })
       .catch(err => Promise.reject(err));
-  },
-  /**
-   * As a registered company, delete your company and associated jobs postings from the database
-   * @param {String} companyId -- an id corresponding to an existing company
-   */
-  deleteCompany(companyId) {
-    return this.findById(companyId)
-      .then(company => {
-        // return Job.update({ $pullAll: { _id: company.jobs }})
-        //   .then(jobs => console.log(`Job postings by ${company.name} deleted`))
-        //   .catch(err => Promise.reject(err));
-        return this.remove({ _id: companyId }).exec()
-          .then(jobs => console.log(`Job postings by ${company.name} deleted`))
-          .catch(err => Promise.reject(err));
-      })
-      .catch(err => Promise.reject(err));
   }
 };
+
+companySchema.post("findOneAndRemove", company => {
+  Job.remove({ _id: company.id }).exec()
+    .then(() => console.log(`Job postings by ${company.name} deleted`))
+    .catch(err => console.log(err));
+});
 
 module.exports = mongoose.model("Company", companySchema);
