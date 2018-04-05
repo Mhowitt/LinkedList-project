@@ -1,5 +1,5 @@
 const { Job, Company } = require('../models');
-const { newJobSchema } = require('../schemsa');
+const { newJobSchema } = require('../schemas');
 const Validator = require('jsonschema').Validator;
 const validator = new Validator();
 
@@ -55,7 +55,7 @@ module.exports = {
   createJobPosting,
   readJobPostings,
   readJobPosting,
-  editJobPosting,
+  editJobPostingForm,
   updateJobPosting,
   deleteJobPosting
 };

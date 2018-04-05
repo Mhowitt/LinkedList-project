@@ -42,10 +42,7 @@ companySchema.statics = {
 };
 
 companySchema.post("findOneAndRemove", deletedCompany => {
-  console.log(deletedCompany, deletedCompany._id, deletedCompany.id)
-  Job.remove({ company: deletedCompany.id }, err => {
-    if (err) console.log('JOBS NOT DELETED! + ', err)
-  })
+  return Job.remove({ company: deletedCompany._id })
     .then(() => console.log(`Job postings by ${deletedCompany.name} deleted`))
     .catch(err => console.log('Unable to delete associated jobs:', err));
 });

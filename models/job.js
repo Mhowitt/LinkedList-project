@@ -4,6 +4,7 @@ const Company = require("./job");
 const jobSchema = new mongoose.Schema(
   {
     title: String,
+    companyName: String,
     company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company"
@@ -13,6 +14,14 @@ const jobSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+jobSchema.post('save', job => {
+  return Company.findOneAndUpdate({ name: job.companyName }, {
+    $addToSet: { jobs: job._id }
+  }).then(company => {
+    console.log(`${job._id} added to ${company.name} jobs list`);
+  }).catch(err => console.log(err));
+});
 
 jobSchema.post('findByIdAndRemove', job => {
   Company.findOneAndUpdate( job.company, {
