@@ -54,19 +54,25 @@ userSchema.statics = {
 
 userSchema.post("findOneAndUpdate", user => {
   // call the owner model and update its dogs array
-  Company.findOneAndUpdate(user.currentCompany, {
-    $addToSet: { employees: user._id }
-  }).then(() => {
+  Company.findByIdAndUpdate(
+    { _id: user.currentCompany },
+    {
+      $addToSet: { employees: user._id }
+    }
+  ).then(() => {
     console.log("POST HOOK RAN");
   });
 });
 
 // after Dog.findOneAndRemove (delete) query runs
-userSchema.post("findOneAndRemove", user => {
+userSchema.post("findByIdAndRemove", user => {
   // call the owner model and update its dogs array
-  Company.findOneAndUpdate(user.currentCompany, {
-    $pull: { employees: user._id }
-  }).then(() => {
+  Company.findByIdAndUpdate(
+    { _id: user.currentCompany },
+    {
+      $pull: { employees: user._id }
+    }
+  ).then(() => {
     console.log("POST HOOK RAN");
   });
 });
