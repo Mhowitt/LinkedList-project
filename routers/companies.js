@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { companies } = require('../handlers');
+const { auth, companies } = require("../handlers");
 const {
   renderNewCompanyForm,
   createCompany,
@@ -12,18 +12,20 @@ const {
 } = companies;
 
 router
-  .route('')
+  .route("")
   .get(readCompanies)
   .post(createCompany);
 
-router.route('/new').get(renderNewCompanyForm);
+router.route("/new").get(renderNewCompanyForm);
 
 router
-  .route('/:handle')
-  .get(readCompany)
-  .patch(updateCompany)
-  .delete(deleteCompany);
+  .route("/:handle")
+  .get(auth.tokenRequired, readCompany)
+  .patch(auth.ensureCorrectCompany, updateCompany)
+  .delete(auth.ensureCorrectCompany, deleteCompany);
 
-router.route('/:handle/edit').get(renderEditCompanyForm);
+router
+  .route("/:handle/edit")
+  .get(auth.ensureCorrectCompany, renderEditCompanyForm);
 
 module.exports = router;

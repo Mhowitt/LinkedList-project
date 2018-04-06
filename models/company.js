@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const companySchema = new mongoose.Schema({
   name: String,
@@ -9,13 +9,13 @@ const companySchema = new mongoose.Schema({
   employees: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User"
     }
   ],
   jobs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Job'
+      ref: "Job"
     }
   ]
 });
@@ -61,7 +61,7 @@ companySchema.statics = {
           .then(updatedCompany => {
             updatedCompany.jobs.forEach(jobId => {
               return mongoose
-                .model('Job')
+                .model("Job")
                 .findOneAndUpdate(
                   { _id: jobId },
                   { companyHandle: updatedCompany.handle }
@@ -91,7 +91,7 @@ companySchema.statics = {
       .then(deletedCompany => {
         deletedCompany.jobs.forEach(jobId => {
           return mongoose
-            .model('Job')
+            .model("Job")
             .findOneAndRemove({ _id: jobId })
             .then(deletedJob =>
               console.log(
@@ -107,4 +107,25 @@ companySchema.statics = {
   }
 };
 
-module.exports = mongoose.model('Company', companySchema);
+companySchema.pre("save", function(next) {
+  let company = this;
+
+  if (!company.isModified("password")) return next();
+
+  bcrypt.hash(company.password, 10).then(
+    function(hashedPassword) {
+      company.password = hashedPassword;
+      next();
+    },
+    err => next(err)
+  );
+});
+
+companySchema.methods.comparePassword = function(candidatePassword, next) {
+  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+    if (err) return next(err);
+    next(null, isMatch);
+  });
+};
+
+module.exports = mongoose.model("Company", companySchema);

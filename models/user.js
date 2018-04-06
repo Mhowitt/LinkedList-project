@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     currentCompanyId: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company'
+        ref: "Company"
       }
     ],
     photo: String,
@@ -60,7 +60,7 @@ userSchema.statics = {
       .then(user => {
         console.log(`User ${user.username} successfully updated`);
         return mongoose
-          .model('Company')
+          .model("Company")
           .findByIdAndUpdate(user.currentCompanyId, {
             $addToSet: { employees: user.id }
           })
@@ -86,7 +86,7 @@ userSchema.statics = {
       .then(user => {
         console.log(`User ${user.username} successfully deleted`);
         return mongoose
-          .model('Company')
+          .model("Company")
           .findOneAndUpdate(
             user.currentCompanyId,
             { $pull: { employees: user._id } },
@@ -105,10 +105,10 @@ userSchema.statics = {
   }
 };
 
-userSchema.pre('save', function(next) {
+userSchema.pre("save", function(next) {
   var user = this;
 
-  if (!user.isModified('password')) return next();
+  if (!user.isModified("password")) return next();
 
   bcrypt.hash(user.password, 10).then(
     function(hashedPassword) {
@@ -126,4 +126,4 @@ userSchema.methods.comparePassword = function(candidatePassword, next) {
   });
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
