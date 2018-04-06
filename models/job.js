@@ -42,9 +42,12 @@ jobSchema.statics = {
         console.log(`${job.title} successfully deleted`);
         return mongoose
           .model('Company')
-          .findOneAndUpdate(job.company, {
-            $pull: { jobs: job._id }
-          })
+          .findOneAndUpdate(
+            { handle: job.companyHandle },
+            {
+              $pull: { jobs: job._id }
+            }
+          )
           .then(company =>
             console.log(
               `Job ${job._id} removed from ${company.name}'s jobs list`
