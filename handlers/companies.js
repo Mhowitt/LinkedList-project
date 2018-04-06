@@ -1,4 +1,3 @@
-const { Job, Company } = require('../models');
 const { newCompanySchema } = require('../schemas');
 const Validator = require('jsonschema').Validator;
 const validator = new Validator();
@@ -54,7 +53,7 @@ function updateCompany(req, res, next) {
 }
 
 function deleteCompany(req, res, next) {
-  return Company.findOneAndRemove({ handle: req.params.handle })
+  return Company.deleteCompany(req.params.handle)
     .then(() => res.json({ data: { message: 'Company successfully deleted' } }))
     .catch(err => res.json(err.message));
 }
