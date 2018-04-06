@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const jobSchema = new mongoose.Schema(
   {
@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema(
     companyHandle: String,
     company: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Company'
+      ref: "Company"
     },
     salary: Number,
     equity: Number
@@ -21,7 +21,7 @@ jobSchema.statics = {
       .then(job => {
         console.log(`${job.title} successfully created`);
         return mongoose
-          .model('Company')
+          .model("Company")
           .findOneAndUpdate(
             { handle: job.companyHandle },
             {
@@ -59,4 +59,4 @@ jobSchema.statics = {
   }
 };
 
-module.exports = mongoose.model('Job', jobSchema);
+module.exports = mongoose.model("Job", jobSchema);

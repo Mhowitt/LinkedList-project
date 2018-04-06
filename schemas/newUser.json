@@ -1,5 +1,5 @@
 {
-  "$id": "http://example.com/example.json",
+  "$id": "http://linkedlist.com/example.json",
   "type": "object",
   "properties": {
     "firstName": {

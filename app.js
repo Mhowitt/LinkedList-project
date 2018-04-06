@@ -1,7 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const { usersRouter, companiesRouter, jobsRouter } = require("./routers");
+const {
+  usersRouter,
+  companiesRouter,
+  jobsRouter,
+  authRouter
+} = require("./routers");
+var authMiddleware = require("./middleware/auth");
 
 const app = express();
 
@@ -10,7 +16,9 @@ app.use(bodyParser.json({ type: "*/*" }));
 
 const PORT = 3000;
 
-app.use("/users", usersRouter);
+app.use("/auth", authRoutes);
+
+app.use("/users", authMiddleware.loginRequired, usersRouter);
 app.use("/companies", companiesRouter);
 app.use("/jobs", jobsRouter);
 
