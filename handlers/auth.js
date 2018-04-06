@@ -1,9 +1,9 @@
-require("dotenv").load();
+require('dotenv').load();
 
-var db = require("../models");
-var jwt = require("jsonwebtoken");
+var db = require('../models');
+var jwt = require('jsonwebtoken');
 
-router.post("/login", function(req, res) {
+router.post('/login', function(req, res) {
   db.User.findOne({ username: req.body.username }).then(
     function(user) {
       user.comparePassword(req.body.password, function(err, isMatch) {
@@ -11,25 +11,25 @@ router.post("/login", function(req, res) {
           var token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY);
           res.status(200).send({ token });
         } else {
-          res.status(400).send("Invalid Credentials");
+          res.status(400).send('Invalid Credentials');
         }
       });
     },
     function(err) {
-      res.status(400).send("Invalid Credentials");
+      res.status(400).send('Invalid Credentials');
     }
   );
 });
 
-router.post("/signup", function(req, res) {
+router.post('/signup', function(req, res) {
   db.User.create(req.body).then(function(user) {
     var token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY);
     res.status(200).send({ token });
   });
 });
 
-router.get("/logout", function(req, res) {
+router.get('/logout', function(req, res) {
   req.session.user_id = null;
-  req.flash("message", "logged out!");
-  res.redirect("/users/login");
+  req.flash('message', 'logged out!');
+  res.redirect('/users/login');
 });

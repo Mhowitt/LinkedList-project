@@ -1,17 +1,16 @@
-const { newCompanySchema } = require('../schemas');
+const { Company } = require('../models');
+const { companySchema } = require('../schemas');
 const Validator = require('jsonschema').Validator;
 const validator = new Validator();
 
-function newCompanyForm(req, res, next) {
-  return res.json({
-    data: { message: 'New company form rendered successfully' }
-  });
+function renderNewCompanyForm(req, res, next) {
+  return res.json({ message: 'New company form rendered successfully' });
 }
 
 function createCompany(req, res, next) {
-  const result = validator.validate(req.body, newCompanySchema);
+  const result = validator.validate(req.body, companySchema);
   if (!result.valid) {
-    const errors = result.errors.map(e => e.message).join(', ');
+    const errors = result.errors.map(error => error.message).join(', ');
     return next({ message: errors });
   }
   Company.createCompany(new Company(req.body))
@@ -31,19 +30,17 @@ function readCompany(req, res, next) {
     .exec()
     .then(company => {
       if (!company) {
-        return res.status(404).json({
-          data: { message: `Company ${req.params.handle} not found` }
-        });
+        return res
+          .status(404)
+          .json({ message: `Company ${req.params.handle} not found` });
       }
       return res.json({ data: company });
     })
     .catch(err => res.json(err.message));
 }
 
-function editCompanyForm(req, res, next) {
-  return res.json({
-    data: { message: 'Edit company form rendered successfully' }
-  });
+function renderEditCompanyForm(req, res, next) {
+  return res.json({ message: 'Edit company form rendered successfully' });
 }
 
 function updateCompany(req, res, next) {
@@ -54,16 +51,16 @@ function updateCompany(req, res, next) {
 
 function deleteCompany(req, res, next) {
   return Company.deleteCompany(req.params.handle)
-    .then(() => res.json({ data: { message: 'Company successfully deleted' } }))
+    .then(() => res.json({ message: 'Company successfully deleted' }))
     .catch(err => res.json(err.message));
 }
 
 module.exports = {
-  newCompanyForm,
+  renderNewCompanyForm,
   createCompany,
   readCompanies,
   readCompany,
-  editCompanyForm,
+  renderEditCompanyForm,
   updateCompany,
   deleteCompany
 };

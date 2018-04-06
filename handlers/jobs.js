@@ -1,69 +1,68 @@
-const mongoose = require("mongoose");
-const { Job, Company } = require("../models");
-const { newJobPostingSchema } = require("../schemas");
-const Validator = require("jsonschema").Validator;
+const { Job } = require('../models');
+const { jobSchema } = require('../schemas');
+const Validator = require('jsonschema').Validator;
 const validator = new Validator();
 
-function newJobPostingForm(req, res, next) {
-  return res.json({ data: { message: "New job form rendered successfully" } });
+function renderNewJobForm(req, res, next) {
+  return res.json({ message: 'New job form rendered successfully' });
 }
 
-function createJobPosting(req, res, next) {
-  const result = validator.validate(req.body, newJobPostingSchema);
+function createJob(req, res, next) {
+  const result = validator.validate(req.body, jobSchema);
   if (!result.valid) {
-    const errors = result.errors.map(e => e.message).join(", ");
-    console.log("error here");
+    const errors = result.errors.map(error => error.message).join(', ');
+    console.log('Error creating job');
     return next({ message: errors });
   }
 
-  Job.createJobPosting(new Job(req.body))
+  Job.createJob(new Job(req.body))
     .then(job => res.status(201).json({ data: job }))
-    .catch(err => res.json({ data: err }));
+    .catch(err => res.json(err.message));
 }
 
-function readJobPostings(req, res, next) {
+function readJobs(req, res, next) {
   return Job.find()
     .then(jobs => res.json({ data: jobs }))
-    .catch(err => res.json({ data: err }));
+    .catch(err => res.json(err.message));
 }
 
-function readJobPosting(req, res, next) {
+function readJob(req, res, next) {
   return Job.findById(req.params.jobId)
-    .populate("company")
+    .populate('company')
     .exec()
     .then(job => {
-      if (!user) {
+      if (!job) {
         return res
           .status(404)
-          .json({ message: `User ${req.params.userId} not found` });
+          .json({ message: `Job ${req.params.jobId} not found` });
       }
       return res.json({ data: job });
     })
-    .catch(err => res.json({ data: err }));
+    .catch(err => res.json(err.message));
 }
 
-function editJobPostingForm(req, res, next) {
-  return res.json({ data: { message: "Edit job form rendered successfully" } });
+function renderEditJobForm(req, res, next) {
+  return res.json({ message: 'Edit job form rendered successfully' });
 }
 
-function updateJobPosting(req, res, next) {
+function updateJob(req, res, next) {
   return Job.findByIdAndUpdate(req.params.jobId, req.body, { new: true })
     .then(job => res.json({ data: job }))
-    .catch(err => res.json({ data: err }));
+    .catch(err => res.json(err.message));
 }
 
-function deleteJobPosting(req, res, next) {
-  return Job.deleteJobPosting(req.params.jobId)
-    .then(() => res.json({ data: { message: "Job successfully deleted" } }))
-    .catch(err => res.json({ data: err }));
+function deleteJob(req, res, next) {
+  return Job.deleteJob(req.params.jobId)
+    .then(() => res.json({ message: 'Job successfully deleted' }))
+    .catch(err => res.json(err.message));
 }
 
 module.exports = {
-  newJobPostingForm,
-  createJobPosting,
-  readJobPostings,
-  readJobPosting,
-  editJobPostingForm,
-  updateJobPosting,
-  deleteJobPosting
+  renderNewJobForm,
+  createJob,
+  readJobs,
+  readJob,
+  renderEditJobForm,
+  updateJob,
+  deleteJob
 };
