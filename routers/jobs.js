@@ -1,21 +1,29 @@
 const express = require('express');
 const router = express.Router();
-
 const { jobs } = require('../handlers');
+const {
+  renderNewJobForm,
+  createJob,
+  readJobs,
+  readJob,
+  renderEditJobForm,
+  updateJob,
+  deleteJob
+} = jobs;
 
 router
   .route('')
-  .get(jobs.readJobPostings)
-  .post(jobs.createJobPosting);
+  .get(readJobs)
+  .post(createJob);
 
-router.route('/new').get(jobs.newJobPostingForm);
+router.route('/new').get(renderNewJobForm);
 
 router
   .route('/:jobId')
-  .get(jobs.readJobPosting)
-  .patch(jobs.updateJobPosting)
-  .delete(jobs.deleteJobPosting);
+  .get(readJob)
+  .patch(updateJob)
+  .delete(deleteJob);
 
-router.route('/:jobId/edit').get(jobs.editJobPostingForm);
+router.route('/:jobId/edit').get(renderEditJobForm);
 
 module.exports = router;

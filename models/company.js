@@ -68,9 +68,9 @@ companySchema.statics = {
                 )
                 .then(updatedJob =>
                   console.log(
-                    `Updated handle for job ${updatedJob._id} to match ${
-                      updatedCompany.title
-                    }`
+                    `Successfully updated company handle for job ${
+                      updatedJob._id
+                    } to reflect change to ${updatedCompany.title}'s handle`
                   )
                 )
                 .catch(err => Promise.reject(err));
@@ -97,12 +97,11 @@ companySchema.statics = {
               console.log(
                 `Successfully deleted ${
                   deletedJob.title
-                } originally posted by ${deletedCompany.name}`
+                }, originally posted by ${deletedCompany.name}`
               )
             )
             .catch(err => Promise.reject(err));
         });
-        console.log(deletedCompany);
       })
       .catch(err => Promise.reject(err));
   }
