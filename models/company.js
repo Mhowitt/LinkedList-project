@@ -43,10 +43,15 @@ companySchema.statics = {
       })
       .catch(err => Promise.reject(err));
   },
+  /**
+   * As a registered and logged in company,
+   * update this company profile and associated job posting handles in the database.
+   * @param {String} handle -- a unique string identifying the company
+   * @param {Object} patchBody -- an object (request.body) containing updated company information
+   */
   updateCompany(handle, patchBody) {
     return this.findOne({ handle: patchBody.handle })
       .then(company => {
-        console.log(company);
         if (company)
           if (company.handle !== handle)
             throw new Error(`The handle ${company.handle} already exists`);
@@ -54,7 +59,6 @@ companySchema.statics = {
           new: true
         })
           .then(updatedCompany => {
-            console.log(updatedCompany);
             updatedCompany.jobs.forEach(jobId => {
               return mongoose
                 .model('Job')
@@ -64,7 +68,7 @@ companySchema.statics = {
                 )
                 .then(updatedJob =>
                   console.log(
-                    `Updated job ${updatedJob._id}'s handle to match ${
+                    `Updated handle for job ${updatedJob._id} to match ${
                       updatedCompany.title
                     }`
                   )
@@ -76,15 +80,32 @@ companySchema.statics = {
           .catch(err => Promise.reject(err));
       })
       .catch(err => Promise.reject(err));
+  },
+  /**
+   * As a registered and logged in company,
+   * delete this company profile and associated job postings from the database.
+   * @param {String} handle -- a unique string identifying the company
+   */
+  deleteCompany(handle) {
+    return this.findOneAndRemove({ handle })
+      .then(deletedCompany => {
+        deletedCompany.jobs.forEach(jobId => {
+          return mongoose
+            .model('Job')
+            .findOneAndRemove({ _id: jobId })
+            .then(deletedJob =>
+              console.log(
+                `Successfully deleted ${
+                  deletedJob.title
+                } originally posted by ${deletedCompany.name}`
+              )
+            )
+            .catch(err => Promise.reject(err));
+        });
+        console.log(deletedCompany);
+      })
+      .catch(err => Promise.reject(err));
   }
 };
-
-companySchema.post('findOneAndRemove', deletedCompany => {
-  return mongoose
-    .model('Job')
-    .remove({ company: deletedCompany._id })
-    .then(() => console.log(`Job postings by ${deletedCompany.name} deleted`))
-    .catch(err => console.log('Unable to delete associated jobs:', err));
-});
 
 module.exports = mongoose.model('Company', companySchema);
