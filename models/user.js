@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-const Company = require('./company');
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const Company = require("./company");
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,7 +13,7 @@ const userSchema = new mongoose.Schema(
     currentCompanyId: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company'
+        ref: "Company"
       }
     ],
     photo: String,
@@ -58,7 +59,7 @@ userSchema.statics = {
           $addToSet: { employees: user.id }
         })
           .then(() => {
-            console.log('POST HOOK RAN');
+            console.log("POST HOOK RAN");
             return user;
           })
           .catch(err => Promise.reject(err));
@@ -76,12 +77,35 @@ userSchema.statics = {
           { new: true }
         )
           .then(() => {
-            console.log('POST HOOK RAN');
+            console.log("POST HOOK RAN");
           })
           .catch(err => Promise.reject(err));
       })
       .catch(err => Promise.reject(err));
   }
+};
+
+userSchema.pre("save", function(next) {
+  var user = this;
+
+  if (!user.isModified("password")) return next();
+
+  bcrypt.hash(user.password, 10).then(
+    function(hashedPassword) {
+      user.password = hashedPassword;
+      next();
+    },
+    function(err) {
+      return next(err);
+    }
+  );
+});
+
+userSchema.methods.comparePassword = function(candidatePassword, next) {
+  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+    if (err) return next(err);
+    next(null, isMatch);
+  });
 };
 
 // userSchema.post("findOneAndUpdate", user => {
@@ -109,4 +133,4 @@ userSchema.statics = {
 //   });
 // });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
