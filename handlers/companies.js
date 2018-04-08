@@ -13,7 +13,7 @@ function createCompany(req, res, next) {
     const errors = result.errors.map(error => error.message).join(', ');
     return next({ message: errors });
   }
-  Company.createCompany(new Company(req.body))
+  return Company.createCompany(new Company(req.body))
     .then(company => res.status(201).json({ data: company }))
     .catch(err => res.json(err.message));
 }
@@ -44,6 +44,11 @@ function renderEditCompanyForm(req, res, next) {
 }
 
 function updateCompany(req, res, next) {
+  const result = validator.validate(req.body, companySchema);
+  if (!result.valid) {
+    const errors = result.errors.map(error => error.message).join(', ');
+    return next({ message: errors });
+  }
   return Company.updateCompany(req.params.handle, req.body)
     .then(company => res.json({ data: company }))
     .catch(err => res.json(err.message));

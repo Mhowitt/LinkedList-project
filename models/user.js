@@ -1,32 +1,58 @@
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const Validator = require('jsonschema').Validator;
+const validator = new Validator();
+const immutablePlugin = require('mongoose-immutable');
 
 const userSchema = new mongoose.Schema(
   {
     firstName: String,
     lastName: String,
-    username: String,
-    email: String,
+    username: { type: String, immutable: true },
+    email: {
+      type: String,
+      validate: {
+        validator: function(validator) {
+          return /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(
+            validator
+          );
+        },
+        message: 'Not a valid email'
+      },
+      required: [true, 'User email required']
+    },
     password: String,
     currentCompanyName: String,
-    currentCompanyId: [
+    currentCompanyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Company'
+    },
+    photo: {
+      type: String,
+      validate: {
+        validator: function(validator) {
+          return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(
+            validator
+          );
+        },
+        message: 'Not a valid image URL'
+      }
+    },
+    experience: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Company"
+        jobTitle: String,
+        company: String,
+        startDate: Date,
+        endDate: Date
       }
     ],
-    photo: String,
-    experience: {
-      jobTitle: String,
-      company: String,
-      startDate: Date,
-      endDate: Date
-    },
-    education: {
-      institution: String,
-      degree: String,
-      endDate: Date
-    },
+    education: [
+      {
+        institution: String,
+        degree: String,
+        endDate: Date
+      }
+    ],
     skills: [String]
   },
   { timestamps: true } // automatically adds createdAt and updatedAt
@@ -60,16 +86,34 @@ userSchema.statics = {
       .then(user => {
         console.log(`User ${user.username} successfully updated`);
         return mongoose
-          .model("Company")
-          .findByIdAndUpdate(user.currentCompanyId, {
-            $addToSet: { employees: user.id }
-          })
+          .model('Company')
+          .findOneAndUpdate(
+            { name: user.currentCompanyName },
+            {
+              $addToSet: { employees: user.id }
+            }
+          )
           .then(company => {
-            console.log(
-              `User ${user._id} successfully added to ${
-                company.name
-              }'s list of employees`
-            );
+            if (company) {
+              console.log(
+                `User ${user._id} successfully added to ${
+                  company.name
+                }'s list of employees`
+              );
+              this.findOneAndUpdate(
+                { username: user.username },
+                { currentCompanyId: company._id }
+              )
+                .then(updatedUser => {
+                  console.log(
+                    `Company ${company._id} successfully listed as ${
+                      updatedUser.username
+                    }'s current company `
+                  );
+                  return updatedUser;
+                })
+                .catch(err => Promise.reject(err));
+            }
             return user;
           })
           .catch(err => Promise.reject(err));
@@ -86,7 +130,7 @@ userSchema.statics = {
       .then(user => {
         console.log(`User ${user.username} successfully deleted`);
         return mongoose
-          .model("Company")
+          .model('Company')
           .findOneAndUpdate(
             user.currentCompanyId,
             { $pull: { employees: user._id } },
@@ -105,25 +149,24 @@ userSchema.statics = {
   }
 };
 
-userSchema.pre("save", function(next) {
-  var user = this;
-
-  if (!user.isModified("password")) return next();
-
-  bcrypt.hash(user.password, 10).then(
-    function(hashedPassword) {
+userSchema.pre('save', function(next) {
+  const user = this;
+  if (!user.isModified('password')) return next();
+  return bcrypt
+    .hash(user.password, 10)
+    .then(hashedPassword => {
       user.password = hashedPassword;
-      next();
-    },
-    err => next(err)
-  );
+      return next();
+    })
+    .catch(err => next(err));
 });
 
 userSchema.methods.comparePassword = function(candidatePassword, next) {
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
     if (err) return next(err);
-    next(null, isMatch);
+    return next(null, isMatch);
   });
 };
 
-module.exports = mongoose.model("User", userSchema);
+userSchema.plugin(immutablePlugin);
+module.exports = mongoose.model('User', userSchema);

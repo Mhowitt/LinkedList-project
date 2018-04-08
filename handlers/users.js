@@ -9,7 +9,7 @@ function createUser(req, res, next) {
     const errors = result.errors.map(error => error.message).join(', ');
     return next({ message: errors });
   }
-  User.createUser(new User(req.body))
+  return User.createUser(new User(req.body))
     .then(user => res.status(201).json({ data: user }))
     .catch(err => res.json(err.message));
 }
@@ -38,6 +38,11 @@ function readUser(req, res, next) {
 }
 
 function updateUser(req, res, next) {
+  const result = validator.validate(req.body, userSchema);
+  if (!result.valid) {
+    const errors = result.errors.map(error => error.message).join(', ');
+    return next({ message: errors });
+  }
   return User.updateUser(req.params.username, req.body)
     .then(user => res.json({ data: user }))
     .catch(err => res.json(err.message));

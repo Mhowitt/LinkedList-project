@@ -17,6 +17,7 @@
     "jsonschema": "^1.2.3",
     "jsonwebtoken": "^8.2.1",
     "method-override": "^2.3.10",
-    "mongoose": "^5.0.12"
+    "mongoose": "^5.0.12",
+    "mongoose-immutable": "0.0.2"
   }
 }

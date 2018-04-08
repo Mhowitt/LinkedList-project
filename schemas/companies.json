@@ -33,12 +33,6 @@
       "examples": ["password123"],
       "minLength": 1,
       "maxLength": 55
-    },
-    "logo": {
-      "$id": "/properties/logo",
-      "type": "string",
-      "title": "The Logo Schema ",
-      "examples": ["https://www.rithmschool.com/elie.jpg"]
     }
   },
   "required": ["name", "email", "handle", "password"]

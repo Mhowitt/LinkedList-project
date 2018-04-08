@@ -14,8 +14,7 @@ function createJob(req, res, next) {
     console.log('Error creating job');
     return next({ message: errors });
   }
-
-  Job.createJob(new Job(req.body))
+  return Job.createJob(new Job(req.body))
     .then(job => res.status(201).json({ data: job }))
     .catch(err => res.json(err.message));
 }
@@ -46,6 +45,12 @@ function renderEditJobForm(req, res, next) {
 }
 
 function updateJob(req, res, next) {
+  const result = validator.validate(req.body, jobSchema);
+  if (!result.valid) {
+    const errors = result.errors.map(error => error.message).join(', ');
+    console.log('Error creating job');
+    return next({ message: errors });
+  }
   return Job.findByIdAndUpdate(req.params.jobId, req.body, { new: true })
     .then(job => res.json({ data: job }))
     .catch(err => res.json(err.message));

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { jobs } = require('../handlers');
+const { auth, jobs } = require('../handlers');
 const {
   renderNewJobForm,
   createJob,
@@ -13,17 +13,34 @@ const {
 
 router
   .route('')
-  .get(readJobs)
-  .post(createJob);
+  .get(auth.tokenRequired, readJobs)
+  .post(auth.tokenRequired, auth.ensureCorrectCompany, createJob);
 
 router.route('/new').get(renderNewJobForm);
 
 router
   .route('/:jobId')
-  .get(readJob)
-  .patch(updateJob)
-  .delete(deleteJob);
+  .get(auth.tokenRequired, readJob)
+  .patch(
+    auth.tokenRequired,
+    auth.ensureCorrectCompany,
+    auth.ensureCorrectJob,
+    updateJob
+  )
+  .delete(
+    auth.tokenRequired,
+    auth.ensureCorrectCompany,
+    auth.ensureCorrectJob,
+    deleteJob
+  );
 
-router.route('/:jobId/edit').get(renderEditJobForm);
+router
+  .route('/:jobId/edit')
+  .get(
+    auth.tokenRequired,
+    auth.ensureCorrectCompany,
+    auth.ensureCorrectJob,
+    renderEditJobForm
+  );
 
 module.exports = router;

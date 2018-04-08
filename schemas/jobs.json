@@ -24,14 +24,7 @@
       "title": "The Salary Schema ",
       "default": 0,
       "examples": [120000]
-    },
-    "equity": {
-      "$id": "/properties/equity",
-      "type": "integer",
-      "title": "The Equity Schema ",
-      "default": 0,
-      "examples": [8]
     }
   },
-  "required": ["title", "companyHandle", "salary", "equity"]
+  "required": ["title", "companyHandle", "salary"]
 }

@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { auth } = require("../handlers");
+const { auth } = require('../handlers');
 
-router.route("").post(auth.loginUser);
+router.route('').post(auth.loginUser);
 
-exports.module = router;
+module.exports = router;

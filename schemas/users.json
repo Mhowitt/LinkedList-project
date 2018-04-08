@@ -31,7 +31,9 @@
       "type": "string",
       "format": "email",
       "title": "The Email Schema ",
-      "examples": ["jane.doe@example.com"]
+      "examples": ["jane.doe@example.com"],
+      "minLength": 1,
+      "maxLength": 55
     },
     "password": {
       "$id": "/properties/password",
@@ -39,15 +41,7 @@
       "title": "The Password Schema ",
       "examples": ["password123"],
       "minLength": 1,
-      "maxLength": 55
-    },
-    "photo": {
-      "$id": "/properties/photo",
-      "type": "string",
-      "title": "The Photo Schema ",
-      "default":
-        "https://worldarts2015.s3-us-west-2.amazonaws.com/images/default-profile-picture.jpg?cache=1473463677",
-      "examples": ["https://wwww.picture.com"]
+      "maxLength": 60
     }
   },
   "required": ["firstName", "lastName", "username", "email", "password"]

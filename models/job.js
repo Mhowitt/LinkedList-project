@@ -1,5 +1,7 @@
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-
+const Validator = require('jsonschema').Validator;
+const validator = new Validator();
 const jobSchema = new mongoose.Schema(
   {
     title: String,
