@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { users, auth } = require("../handlers");
+const { users, auth } = require('../handlers');
 
 const {
   renderNewUserForm,
@@ -12,21 +12,21 @@ const {
   deleteUser
 } = users;
 
-con;
-
 router
-  .route("")
-  .get(readUsers)
+  .route('')
+  .get(auth.tokenRequired, readUsers)
   .post(createUser);
 
-router.route("/new").get(renderNewUserForm);
+router.route('/new').get(renderNewUserForm);
 
 router
-  .route("/:username")
+  .route('/:username')
   .get(auth.tokenRequired, readUser)
-  .patch(auth.ensureCorrectUser, updateUser)
-  .delete(auth.ensureCorrectUser, deleteUser);
+  .patch(auth.tokenRequired, auth.ensureCorrectUser, updateUser)
+  .delete(auth.tokenRequired, auth.ensureCorrectUser, deleteUser);
 
-router.route("/:username/edit").get(auth.ensureCorrectUser, renderEditUserForm);
+router
+  .route('/:username/edit')
+  .get(auth.tokenRequired, auth.ensureCorrectUser, renderEditUserForm);
 
 module.exports = router;

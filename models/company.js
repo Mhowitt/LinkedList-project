@@ -1,21 +1,46 @@
-const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const Validator = require('jsonschema').Validator;
+const validator = new Validator();
+const immutablePlugin = require('mongoose-immutable');
 
 const companySchema = new mongoose.Schema({
-  name: String,
-  email: String,
+  name: { type: String, immutable: true },
+  email: {
+    type: String,
+    validate: {
+      validator: function(validator) {
+        return /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(
+          validator
+        );
+      },
+      message: 'Not a valid email'
+    },
+    required: [true, 'Company email required']
+  },
   handle: String,
   password: String,
-  logo: String,
+  logo: {
+    type: String,
+    validate: {
+      validator: function(validator) {
+        return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(
+          validator
+        );
+      },
+      message: 'Not a valid logo URL'
+    }
+  },
   employees: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: 'User'
     }
   ],
   jobs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Job"
+      ref: 'Job'
     }
   ]
 });
@@ -61,7 +86,7 @@ companySchema.statics = {
           .then(updatedCompany => {
             updatedCompany.jobs.forEach(jobId => {
               return mongoose
-                .model("Job")
+                .model('Job')
                 .findOneAndUpdate(
                   { _id: jobId },
                   { companyHandle: updatedCompany.handle }
@@ -91,7 +116,7 @@ companySchema.statics = {
       .then(deletedCompany => {
         deletedCompany.jobs.forEach(jobId => {
           return mongoose
-            .model("Job")
+            .model('Job')
             .findOneAndRemove({ _id: jobId })
             .then(deletedJob =>
               console.log(
@@ -107,10 +132,10 @@ companySchema.statics = {
   }
 };
 
-companySchema.pre("save", function(next) {
+companySchema.pre('save', function(next) {
   let company = this;
 
-  if (!company.isModified("password")) return next();
+  if (!company.isModified('password')) return next();
 
   bcrypt.hash(company.password, 10).then(
     function(hashedPassword) {
@@ -128,4 +153,5 @@ companySchema.methods.comparePassword = function(candidatePassword, next) {
   });
 };
 
-module.exports = mongoose.model("Company", companySchema);
+companySchema.plugin(immutablePlugin);
+module.exports = mongoose.model('Company', companySchema);
