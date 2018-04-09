@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-const Validator = require('jsonschema').Validator;
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const Validator = require("jsonschema").Validator;
 const validator = new Validator();
-const immutablePlugin = require('mongoose-immutable');
+const immutablePlugin = require("mongoose-immutable");
 
 const companySchema = new mongoose.Schema({
   name: { type: String, immutable: true },
@@ -14,9 +14,9 @@ const companySchema = new mongoose.Schema({
           validator
         );
       },
-      message: 'Not a valid email'
+      message: "Not a valid email"
     },
-    required: [true, 'Company email required']
+    required: [true, "Company email required"]
   },
   handle: String,
   password: String,
@@ -28,19 +28,19 @@ const companySchema = new mongoose.Schema({
           validator
         );
       },
-      message: 'Not a valid logo URL'
+      message: "Not a valid logo URL"
     }
   },
   employees: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User"
     }
   ],
   jobs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Job'
+      ref: "Job"
     }
   ]
 });
@@ -86,7 +86,7 @@ companySchema.statics = {
           .then(updatedCompany => {
             updatedCompany.jobs.forEach(jobId => {
               return mongoose
-                .model('Job')
+                .model("Job")
                 .findOneAndUpdate(
                   { _id: jobId },
                   { companyHandle: updatedCompany.handle }
@@ -116,7 +116,7 @@ companySchema.statics = {
       .then(deletedCompany => {
         deletedCompany.jobs.forEach(jobId => {
           return mongoose
-            .model('Job')
+            .model("Job")
             .findOneAndRemove({ _id: jobId })
             .then(deletedJob =>
               console.log(
@@ -128,14 +128,26 @@ companySchema.statics = {
             .catch(err => Promise.reject(err));
         });
       })
+      .catch(err => Promise.reject(err))
+      .then(deletedCompany => {
+        deletedCompany.employees.forEach(employeeId => {
+          return mongoose
+            .model("User")
+            .findOneAndUpdate(
+              employeeId.currentCompanyId,
+              { currentCompanyId: deletedCompany._id || "" },
+              { new: true }
+            );
+        });
+      })
       .catch(err => Promise.reject(err));
   }
 };
 
-companySchema.pre('save', function(next) {
+companySchema.pre("save", function(next) {
   let company = this;
 
-  if (!company.isModified('password')) return next();
+  if (!company.isModified("password")) return next();
 
   bcrypt.hash(company.password, 10).then(
     function(hashedPassword) {
@@ -154,4 +166,4 @@ companySchema.methods.comparePassword = function(candidatePassword, next) {
 };
 
 companySchema.plugin(immutablePlugin);
-module.exports = mongoose.model('Company', companySchema);
+module.exports = mongoose.model("Company", companySchema);

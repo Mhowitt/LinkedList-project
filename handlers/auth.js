@@ -1,7 +1,7 @@
-require('dotenv').load();
+require("dotenv").load();
 
-const { User, Company } = require('../models');
-const jwt = require('jsonwebtoken');
+const { User, Company } = require("../models");
+const jwt = require("jsonwebtoken");
 
 function loginUser(req, res, next) {
   User.findOne({ username: req.body.username })
@@ -15,10 +15,10 @@ function loginUser(req, res, next) {
             );
             res.status(200).send({ token });
           } else {
-            res.status(400).send('Invalid Password');
+            res.status(400).send("Invalid Password");
           }
         });
-      } else res.status(400).send('Invalid Username');
+      } else res.status(400).send("Invalid Username");
     })
     .catch(error => res.status(401).send(`Error: ${error}`));
 }
@@ -35,10 +35,10 @@ function loginCompany(req, res, next) {
             );
             res.status(200).send({ token });
           } else {
-            res.status(400).send('Invalid Password');
+            res.status(400).send("Invalid Password");
           }
         });
-      } else res.status(400).send('Invalid Username');
+      } else res.status(400).send("Invalid Username");
     })
     .catch(error => res.status(401).send(`Error: ${error}`));
 }
@@ -58,61 +58,65 @@ function loginCompany(req, res, next) {
 
 function tokenRequired(req, res, next) {
   try {
-    let token = req.headers.authorization.split(' ')[1];
+    let token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
       if (decoded) {
         next();
       } else {
-        res.status(401).send('Please log in first');
+        res.status(401).send("Please log in first");
       }
     });
   } catch (e) {
-    res.status(401).send('Please log in first');
+    res.status(401).send("Please log in first");
   }
 }
 
 function ensureCorrectUser(req, res, next) {
   try {
-    let token = req.headers.authorization.split(' ')[1];
+    let token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
-      if (decoded.user_id === req.params.id) {
+      if (decoded.username === req.params.username) {
         next();
       } else {
-        res.status(401).send('Unauthorized');
+        res.status(401).send("Unauthorized");
       }
     });
   } catch (e) {
-    res.status(401).send('Unauthorized');
+    res.status(401).send("Unauthorized");
   }
 }
 
 function ensureCorrectCompany(req, res, next) {
   try {
-    let token = req.headers.authorization.split(' ')[1];
+    let token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
-      if (decoded.handle === req.params.handle) {
-        next();
-      } else {
-        res.status(401).send('Unauthorized');
-      }
+      Company.findOne({ handle: req.params.handle })
+        .then(company => {
+          if (decoded.email === company.email) {
+            next();
+          } else {
+            res.status(401).send("Unauthorized");
+          }
+        })
+        .catch(err => Promise.reject(err));
     });
   } catch (e) {
-    res.status(401).send('Unauthorized');
+    res.status(401).send("Unauthorized");
   }
 }
 
 function ensureCorrectJob(req, res, next) {
   try {
-    let token = req.headers.authorization.split(' ')[1];
+    let token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
       if (decoded._id === req.params.jobId) {
         next();
       } else {
-        res.status(401).send('Unauthorized');
+        res.status(401).send("Unauthorized");
       }
     });
   } catch (e) {
-    res.status(401).send('Unauthorized');
+    res.status(401).send("Unauthorized");
   }
 }
 
