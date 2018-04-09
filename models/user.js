@@ -85,133 +85,55 @@ userSchema.statics = {
     // store current user information before update
     return this.findOne({ username })
       .then(currentUser => {
-        console.log('CURRENT USER BEFORE UPDATE IS:', currentUser);
-        // update user with new information
-        return this.findOneAndUpdate({ username }, patchBody, { new: true })
-          .then(user => {
-            console.log('USER AFTER UPDATE IS:', user);
-            console.log(`User ${user.username} successfully updated`);
-            // verify if updated profile includes a current employer
-            if (user.currentCompanyName) {
-              console.log(
-                '* verified updated user profile includes a company name *'
-              );
-              // verify user has changed their current employer
-              if (user.currentCompanyName !== currentUser.currentCompanyName) {
+        console.log('* current user before update is:', currentUser);
+        // remove current user id from previous employer employee list
+        return mongoose
+          .model('Company')
+          .findOneAndUpdate(
+            { name: currentUser.currentCompanyName },
+            { $pull: { employees: currentUser._id } },
+            { new: true }
+          )
+          .then(previousCompany => {
+            console.log(
+              '* previous company after removing user id:',
+              previousCompany
+            );
+            // add current user id to new current employer employee list
+            return mongoose
+              .model('Company')
+              .findOneAndUpdate(
+                { name: patchBody.currentCompanyName },
+                { $addToSet: { employees: currentUser._id } },
+                { new: true }
+              )
+              .then(currentCompany => {
+                if (!currentCompany)
+                  console.log('* current company does not have a profile');
+                else {
+                  console.log(
+                    '* current company after adding user id:',
+                    currentCompany
+                  );
+                }
+                // update patch body to refect current company id if company exists
+                patchBody.currentCompanyId =
+                  currentCompany === null ? null : currentCompany._id;
                 console.log(
-                  '* updated user company name is not the same as before update *'
+                  '* patch body after adding current company id:',
+                  patchBody
                 );
-                // if current company exists, add user's id to employee's list
-                return mongoose
-                  .model('Company')
-                  .findOneAndUpdate(
-                    { name: user.currentCompanyName },
-                    { $addToSet: { employees: user.id } }
-                  )
-                  .then(company => {
-                    console.log(
-                      'COMPANY AT WHICH USER CLAIMS TO WORK:',
-                      company
-                    );
-                    if (company) {
-                      console.log('* verified company is in database *');
-                      console.log(
-                        `User ${user._id} successfully added to ${
-                          company.name
-                        }'s list of employees`
-                      );
-                      // add company id to user to reflect change to current company employees
-                      this.findOneAndUpdate(
-                        { username: user.username },
-                        { currentCompanyId: company._id }
-                      )
-                        .then(updatedUser => {
-                          console.log(
-                            'USER AFTER ADDING COMPANY ID TO CURRENT COMPANY',
-                            updatedUser
-                          );
-                          console.log(
-                            `Company ${company._id} successfully listed as ${
-                              updatedUser.username
-                            }'s current company`
-                          );
-                        })
-                        .catch(err => Promise.reject(err));
-                    }
-                    // find previous company and remove user id from employees
-                    return mongoose
-                      .model('Company')
-                      .findOneAndUpdate(
-                        {
-                          name: currentUser.currentCompanyName
-                        },
-                        {
-                          $pull: {
-                            employees: currentUser.id
-                          }
-                        }
-                      )
-                      .then(prevCompany => {
-                        console.log(
-                          'PREVIOUS COMPANY AFTER REMOVING',
-                          prevCompany
-                        );
-                        if (prevCompany) {
-                          console.log('* verified previous company exists *');
-                          console.log(
-                            `User ${
-                              currentUser._id
-                            } successfully removed from ${
-                              prevCompany.name
-                            }'s list of employees`
-                          );
-                        }
-                      })
-                      .catch(err => Promise.reject(err));
+                // update current user according to patch body
+                return this.findOneAndUpdate({ username }, patchBody, {
+                  new: true
+                })
+                  .then(updatedUser => {
+                    console.log('* current user after update is:', updatedUser);
+                    return updatedUser;
                   })
                   .catch(err => Promise.reject(err));
-              }
-              return user;
-            }
-            // if no current company included but one previously existed
-            if (currentUser.currentCompanyName) {
-              // find previous company and remove user id from employees
-              return mongoose
-                .model('Company')
-                .findOneAndUpdate(
-                  { name: currentUser.currentCompanyName },
-                  { $pull: { employees: currentUser.id } }
-                )
-                .then(prevCompany => {
-                  if (prevCompany) {
-                    console.log(
-                      `User ${currentUser._id} successfully removed from ${
-                        prevCompany.name
-                      }'s list of employees`
-                    );
-                    // remove current company id from user to reflect change to current company employees
-                    this.findOneAndUpdate(
-                      {
-                        username: user.username
-                      },
-                      {
-                        currentCompanyId: null
-                      }
-                    )
-                      .then(updatedUser => {
-                        console.log(
-                          `Company ${company._id} successfully removed from ${
-                            updatedUser.username
-                          }'s current company`
-                        );
-                        return updatedUser;
-                      })
-                      .catch(err => Promise.reject(err));
-                  }
-                })
-                .catch(err => Promise.reject(err));
-            }
-            return user;
+              })
+              .catch(err => Promise.reject(err));
           })
           .catch(err => Promise.reject(err));
       })
