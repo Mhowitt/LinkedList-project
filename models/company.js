@@ -150,7 +150,7 @@ companySchema.pre("save", function(next) {
   if (!company.isModified("password")) return next();
 
   bcrypt.hash(company.password, 10).then(
-    function(hashedPassword) {
+    hashedPassword => {
       company.password = hashedPassword;
       next();
     },
@@ -159,7 +159,8 @@ companySchema.pre("save", function(next) {
 });
 
 companySchema.methods.comparePassword = function(candidatePassword, next) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+  console.log();
+  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
     if (err) return next(err);
     next(null, isMatch);
   });
