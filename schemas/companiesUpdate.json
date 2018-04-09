@@ -1,0 +1,39 @@
+{
+  "$id": "http://rithmschool.com/example.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$id": "/properties/name",
+      "type": "string",
+      "title": "The Name Schema ",
+      "examples": ["Rithm School"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "email": {
+      "$id": "/properties/email",
+      "type": "string",
+      "title": "Email",
+      "examples": ["contact@rithmschool.com"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "handle": {
+      "$id": "/properties/handle",
+      "type": "string",
+      "title": "The Handle Schema ",
+      "examples": ["rithmschool"],
+      "minLength": 1,
+      "maxLength": 55
+    },
+    "password": {
+      "$id": "/properties/password",
+      "type": "string",
+      "title": "The Password Schema ",
+      "examples": ["password123"],
+      "minLength": 1,
+      "maxLength": 55
+    }
+  },
+  "required": ["name", "email", "handle", "password"]
+}

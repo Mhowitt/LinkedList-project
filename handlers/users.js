@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const { userSchema } = require('../schemas');
+const { userSchema, userUpdateSchema } = require('../schemas');
 const Validator = require('jsonschema').Validator;
 const validator = new Validator();
 
@@ -38,7 +38,7 @@ function readUser(req, res, next) {
 }
 
 function updateUser(req, res, next) {
-  const result = validator.validate(req.body, userSchema);
+  const result = validator.validate(req.body, userUpdateSchema);
   if (!result.valid) {
     const errors = result.errors.map(error => error.message).join(', ');
     return next({ message: errors });

@@ -129,7 +129,10 @@ userSchema.statics = {
                 })
                   .then(updatedUser => {
                     console.log('* current user after update is:', updatedUser);
-                    return updatedUser;
+                    return updatedUser
+                      .save()
+                      .then(savedUser => savedUser)
+                      .catch(err => Promise.reject(err));
                   })
                   .catch(err => Promise.reject(err));
               })
@@ -181,9 +184,10 @@ userSchema.pre('save', function(next) {
 });
 
 userSchema.methods.comparePassword = function(candidatePassword, next) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+  console.log('THIS.PWD', this.password, 'THIS', this);
+  bcrypt.compare(candidatePassword, this.password, function(err, boolean) {
     if (err) return next(err);
-    return next(null, isMatch);
+    return next(null, boolean);
   });
 };
 

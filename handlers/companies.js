@@ -1,5 +1,5 @@
 const { Company } = require('../models');
-const { companySchema } = require('../schemas');
+const { companySchema, companyUpdateSchema } = require('../schemas');
 const Validator = require('jsonschema').Validator;
 const validator = new Validator();
 
@@ -44,7 +44,7 @@ function renderEditCompanyForm(req, res, next) {
 }
 
 function updateCompany(req, res, next) {
-  const result = validator.validate(req.body, companySchema);
+  const result = validator.validate(req.body, companyUpdateSchema);
   if (!result.valid) {
     const errors = result.errors.map(error => error.message).join(', ');
     return next({ message: errors });
