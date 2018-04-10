@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-const Validator = require('jsonschema').Validator;
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const Validator = require("jsonschema").Validator;
 const validator = new Validator();
-const immutablePlugin = require('mongoose-immutable');
+const immutablePlugin = require("mongoose-immutable");
 
 const userSchema = new mongoose.Schema(
   {
@@ -17,15 +17,15 @@ const userSchema = new mongoose.Schema(
             validator
           );
         },
-        message: 'Not a valid email'
+        message: "Not a valid email"
       },
-      required: [true, 'User email required']
+      required: [true, "User email required"]
     },
     password: String,
     currentCompanyName: String,
     currentCompanyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Company'
+      ref: "Company"
     },
     photo: {
       type: String,
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
             validator
           );
         },
-        message: 'Not a valid image URL'
+        message: "Not a valid image URL"
       }
     },
     experience: [
@@ -85,10 +85,10 @@ userSchema.statics = {
     // store current user information before update
     return this.findOne({ username })
       .then(currentUser => {
-        console.log('* current user before update is:', currentUser);
+        console.log("* current user before update is:", currentUser);
         // remove current user id from previous employer employee list
         return mongoose
-          .model('Company')
+          .model("Company")
           .findOneAndUpdate(
             { name: currentUser.currentCompanyName },
             { $pull: { employees: currentUser._id } },
@@ -96,12 +96,12 @@ userSchema.statics = {
           )
           .then(previousCompany => {
             console.log(
-              '* previous company after removing user id:',
+              "* previous company after removing user id:",
               previousCompany
             );
             // add current user id to new current employer employee list
             return mongoose
-              .model('Company')
+              .model("Company")
               .findOneAndUpdate(
                 { name: patchBody.currentCompanyName },
                 { $addToSet: { employees: currentUser._id } },
@@ -109,10 +109,10 @@ userSchema.statics = {
               )
               .then(currentCompany => {
                 if (!currentCompany)
-                  console.log('* current company does not have a profile');
+                  console.log("* current company does not have a profile");
                 else {
                   console.log(
-                    '* current company after adding user id:',
+                    "* current company after adding user id:",
                     currentCompany
                   );
                 }
@@ -120,7 +120,7 @@ userSchema.statics = {
                 patchBody.currentCompanyId =
                   currentCompany === null ? null : currentCompany._id;
                 console.log(
-                  '* patch body after adding current company id:',
+                  "* patch body after adding current company id:",
                   patchBody
                 );
                 // update current user according to patch body
@@ -128,11 +128,8 @@ userSchema.statics = {
                   new: true
                 })
                   .then(updatedUser => {
-                    console.log('* current user after update is:', updatedUser);
-                    return updatedUser
-                      .save()
-                      .then(savedUser => savedUser)
-                      .catch(err => Promise.reject(err));
+                    console.log("* current user after update is:", updatedUser);
+                    return updatedUser;
                   })
                   .catch(err => Promise.reject(err));
               })
@@ -152,7 +149,7 @@ userSchema.statics = {
       .then(user => {
         console.log(`User ${user.username} successfully deleted`);
         return mongoose
-          .model('Company')
+          .model("Company")
           .findOneAndUpdate(
             user.currentCompanyId,
             { $pull: { employees: user._id } },
@@ -171,9 +168,9 @@ userSchema.statics = {
   }
 };
 
-userSchema.pre('save', function(next) {
+userSchema.pre("save", function(next) {
   const user = this;
-  if (!user.isModified('password')) return next();
+  if (!user.isModified("password")) return next();
   return bcrypt
     .hash(user.password, 10)
     .then(hashedPassword => {
@@ -184,7 +181,7 @@ userSchema.pre('save', function(next) {
 });
 
 userSchema.methods.comparePassword = function(candidatePassword, next) {
-  console.log('THIS.PWD', this.password, 'THIS', this);
+  console.log("THIS.PWD", this.password, "THIS", this);
   bcrypt.compare(candidatePassword, this.password, function(err, boolean) {
     if (err) return next(err);
     return next(null, boolean);
@@ -192,4 +189,4 @@ userSchema.methods.comparePassword = function(candidatePassword, next) {
 };
 
 userSchema.plugin(immutablePlugin);
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
