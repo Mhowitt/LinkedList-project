@@ -92,15 +92,11 @@ function ensureCorrectCompany(req, res, next) {
   try {
     let token = req.headers.authorization.split(' ')[1];
     jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
-      Company.findOne({ handle: req.params.handle })
-        .then(company => {
-          if (decoded.email === company.email) {
-            next();
-          } else {
-            res.status(401).send('Unauthorized');
-          }
-        })
-        .catch(err => Promise.reject(err));
+      if (decoded.handle === req.params.handle) {
+        next();
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     });
   } catch (e) {
     res.status(401).send('Unauthorized');
