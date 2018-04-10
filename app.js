@@ -21,7 +21,8 @@ app.use("/users", usersRouter);
 app.use("/companies", companiesRouter);
 app.use("/jobs", jobsRouter);
 
-app.get("/", (req, res, next) => res.redirect("/users"));
+app.get("/", (req, res, next) => res.send("heroku deployed"));
+// res.redirect("/users"));
 
 app.use((err, req, res, next) =>
   res
