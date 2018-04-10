@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 mongoose.Promise = Promise;
 mongoose.set("debug", true);
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost/deploy_me")
+  .connect(process.env.MONGODB_URI || "mongodb://localhost/linkedlist")
   .then(() => console.log("successfully connected to database"))
   .catch(err => console.log(err));
 
